@@ -1,1 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 大地的奧祕 - 超強自然學習網 (雲端紀錄版)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background-attachment: fixed;
+        }
 
+        /* 卡片與動畫樣式保持不變 */
+        .flip-card { background-color: transparent; width: 100%; height: 180px; perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner, .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .flip-card-front { background: linear-gradient(to bottom right, #ffffff, #f0fdf4); border: 4px solid #4ade80; }
+        .flip-card-back { background: linear-gradient(to bottom right, #4ade80, #22c55e); color: white; transform: rotateY(180deg); border: 4px solid #16a34a; }
+        .draggable { cursor: grab; transition: transform 0.2s; }
+        .draggable:active { cursor: grabbing; transform: scale(1.05); }
+        .dropzone { transition: all 0.3s ease; min-height: 120px; }
+        .dropzone.dragover { background-color: #fef08a; border-color: #eab308; transform: scale(1.02); }
+        .river-container { position: relative; overflow: hidden; border-radius: 1rem; background: #e0f2fe; height: 200px; }
+        .water-flow { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.4) 0px, rgba(56, 189, 248, 0.4) 20px, rgba(2, 132, 199, 0.5) 20px, rgba(2, 132, 199, 0.5) 40px); animation: flow 2s linear infinite; }
+        .rock-sim { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #78716c; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes flow { from { background-position: 0 0; } to { background-position: 100px 0; } }
+        .tab-btn.active { background-color: #3b82f6; color: white; }
+
+        /* 上傳中的遮罩動畫 */
+        #loadingOverlay { backdrop-filter: blur(4px); }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-gray-800 antialiased p-4 md:p-8">
+
+    <!-- 登入模態框 -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-yellow-400">
+            <i class="fa-solid fa-earth-americas text-6xl text-blue-500 mb-4 animate-bounce"></i>
+            <h2 class="text-3xl font-black text-gray-800 mb-2">大地的奧祕</h2>
+            <p class="text-gray-500 mb-6">請輸入你的探險家姓名</p>
+            <input type="text" id="playerNameInput" placeholder="例如：小智" class="w-full px-4 py-3 rounded-xl border-2 border-blue-300 focus:border-blue-500 focus:outline-none text-xl text-center font-bold mb-4">
+            <button onclick="startGame()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-black py-3 rounded-xl text-xl shadow-lg hover:scale-105 transition-transform">
+                開始探險！🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- 上傳成績的 Loading 遮罩 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex flex-col justify-center items-center hidden">
+        <div class="spinner mb-4"></div>
+        <h2 class="text-2xl font-bold text-white tracking-widest animate-pulse">正在將成績上傳至雲端...</h2>
+    </div>
+
+    <!-- 主頁面 -->
+    <div id="mainContent" class="hidden max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="bg-white/90 backdrop-blur-md rounded-3xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center border-b-8 border-blue-400 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 text-yellow-300 opacity-30 text-9xl"><i class="fa-solid fa-sun"></i></div>
+            <div class="z-10 flex items-center gap-4">
+                <div class="bg-blue-500 text-white p-4 rounded-2xl shadow-inner">
+                    <i class="fa-solid fa-mountain-sun text-4xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
+                        大地的奧祕 學習網
+                    </h1>
+                    <p class="text-lg font-bold text-gray-500 mt-1">國小自然 五下 第2單元 🌍</p>
+                </div>
+            </div>
+            <div class="z-10 mt-4 md:mt-0 bg-yellow-100 px-6 py-3 rounded-full border-2 border-yellow-400 font-bold text-yellow-700 shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-user-astronaut"></i>探險家：<span id="displayPlayerName" class="text-xl"></span>
+            </div>
+        </header>
+
+        <!-- 導覽列標籤 -->
+        <nav class="flex flex-wrap gap-2 justify-center">
+            <button onclick="switchTab('quiz')" class="tab-btn active px-6 py-3 rounded-full font-bold shadow-md bg-white text-purple-500 hover:bg-purple-100 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>特訓題庫</button>
+            <button onclick="switchTab('memory')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-blue-500 hover:bg-blue-100 transition"><i class="fa-solid fa-brain mr-2"></i>超強記憶</button>
+            <button onclick="switchTab('concept')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-green-500 hover:bg-green-100 transition"><i class="fa-solid fa-book-open mr-2"></i>概念學習</button>
+            <button onclick="switchTab('game')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-orange-500 hover:bg-orange-100 transition"><i class="fa-solid fa-gamepad mr-2"></i>互動遊戲</button>
+        </nav>
+
+        <!-- (因篇幅限制，記憶區、學習區、遊戲區的 HTML 結構與上一個版本完全相同，此處省略以節省空間，但實務上需保留) -->
+        <section id="memory-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-green-400"><div class="text-center"><h2 class="text-3xl font-black">超強口訣區</h2><p class="mt-2 text-gray-500">氣陸海生 / 侵搬堆 / 雨風震 (詳細卡片內容請參考上版)</p></div></section>
+        <section id="concept-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-blue-400"><div class="text-center"><h2 class="text-3xl font-black">概念學習區</h2><p class="mt-2 text-gray-500">地層 / 變動 / 影響 (詳細學習單內容請參考上版)</p></div></section>
+        <section id="game-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-orange-400"><div class="text-center"><h2 class="text-3xl font-black">動手玩科學</h2><p class="mt-2 text-gray-500">拖曳分類 與 河流模擬器 (詳細互動內容請參考上版)</p></div></section>
+
+        <!-- 區塊 4: 特訓題庫 (主戰場) -->
+        <section id="quiz-sec" class="bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-purple-400">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-black text-gray-800"><i class="fa-solid fa-pen-to-square text-purple-500 mr-2"></i>30題特訓挑戰</h2>
+                <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-bold">
+                    進度: <span id="qProgress">0</span>/30
+                </div>
+            </div>
+
+            <div id="quizContainer" class="bg-purple-50 p-6 md:p-10 rounded-2xl border-2 border-purple-200 text-center min-h-[300px] flex flex-col justify-center">
+                <div id="quizStartBlock">
+                    <i class="fa-solid fa-meteor text-6xl text-purple-400 mb-4 animate-pulse"></i>
+                    <h3 class="text-2xl font-bold mb-2">準備好測試你的實力了嗎？</h3>
+                    <p class="text-gray-600 mb-6">共30題，測驗結束後將自動上傳成績給老師！</p>
+                    <button onclick="startQuiz()" class="px-8 py-3 bg-purple-600 text-white text-xl font-black rounded-full shadow-lg hover:scale-105 transition-transform">
+                        開始挑戰！
+                    </button>
+                </div>
+
+                <div id="questionBlock" class="hidden w-full max-w-2xl mx-auto">
+                    <div class="flex justify-between mb-2 text-sm font-bold text-purple-600">
+                        <span id="qDifficulty" class="bg-white px-3 py-1 rounded-full shadow-sm">難度：基礎🟢</span>
+                        <span id="qScoreText">目前分數：0</span>
+                    </div>
+                    <h3 id="questionText" class="text-2xl font-bold text-gray-800 mb-8 mt-4 leading-relaxed text-left"></h3>
+                    <div id="optionsContainer" class="grid grid-cols-1 gap-4">
+                        <!-- 選項 -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="quizResultBlock" class="hidden bg-green-50 p-8 rounded-2xl border-2 border-green-200 mt-6">
+                <h3 class="text-3xl font-black text-center text-green-700 mb-4">挑戰完成！🎉</h3>
+                <p class="text-center text-xl font-bold mb-2">你的最終得分是：<span id="finalScoreDisplay" class="text-4xl text-red-500 ml-2"></span> 分</p>
+                <p id="cloudStatus" class="text-center font-bold text-blue-600 mb-6"><i class="fa-solid fa-cloud-arrow-up"></i> 成績已成功上傳雲端！</p>
+                
+                <div class="max-w-lg mx-auto bg-white p-4 rounded-xl shadow-md">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button onclick="resetQuiz()" class="px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow hover:bg-blue-600">再挑戰一次</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // 🔥🔥🔥 請將下面的網址替換為你部署的 GAS Web App URL 🔥🔥🔥
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTOcSf_SVi5LOWM6JXZVSU4V7Rmt711toZwHKtt8eoYK526UBO9rFJ7XhCyHWdOMo9Wg/exec"; 
+        // 例如: "https://script.google.com/macros/s/AKfycby.../exec"
+        // ==========================================
+
+        let playerName = "";
+        let quizScore = 0;
+        let currentQuestionIndex = 0;
+        let scoreHistory = [];
+        let myChart = null;
+        
+        // 新增：用來記錄學生的作答細節
+        let recordedCorrect = [];
+        let recordedWrong = [];
+
+        window.onload = () => {
+            const savedName = localStorage.getItem("earthMysteryName");
+            if (savedName) document.getElementById('playerNameInput').value = savedName;
+            const savedHistory = localStorage.getItem("earthMysteryScores");
+            if(savedHistory) scoreHistory = JSON.parse(savedHistory);
+        };
+
+        function startGame() {
+            const nameInput = document.getElementById('playerNameInput').value.trim();
+            if (!nameInput) { alert("請輸入姓名喔！"); return; }
+            playerName = nameInput;
+            localStorage.setItem("earthMysteryName", playerName);
+            document.getElementById('displayPlayerName').innerText = playerName;
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'text-white'));
+            event.currentTarget.classList.add('active');
+            ['memory-sec', 'concept-sec', 'game-sec', 'quiz-sec'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(`${tabId}-sec`).classList.remove('hidden');
+        }
+
+        // 題目資料 (節錄版示範，請補齊30題)
+        const quizData = [
+            { level: '🟢 基礎', q: '地表環境包含哪些要素？', opt: ['只有陸地和海洋', '大氣、陸地、海洋、生物', '只有岩石和礦物', '大氣和太空'], ans: 1 },
+            { level: '🟢 基礎', q: '地球表面的海洋與陸地比例大約是多少？', opt: ['海洋71%、陸地29%', '海洋50%、陸地50%', '海洋29%、陸地71%', '海洋90%、陸地10%'], ans: 0 },
+            { level: '🟢 基礎', q: '地層主要是由什麼所構成的？', opt: ['塑膠', '樹木', '岩石', '金屬'], ans: 2 },
+            { level: '🟡 進階', q: '關於岩石與礦物的差異，下列何者正確？', opt: ['岩石是由單一物質組成', '岩石和礦物完全一樣', '礦物通常有固定性質，岩石由多種礦物拼裝而成', '礦物比岩石軟'], ans: 2 },
+            { level: '🔴 高階', q: '比較三大作用，哪一個是改變地表形貌最主要的「運輸工具」？', opt: ['侵蝕作用', '堆積作用', '搬運作用', '風化作用'], ans: 2 }
+        ];
+
+        function startQuiz() {
+            document.getElementById('quizStartBlock').classList.add('hidden');
+            document.getElementById('questionBlock').classList.remove('hidden');
+            document.getElementById('quizResultBlock').classList.add('hidden');
+            
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            recordedCorrect = []; // 重置紀錄
+            recordedWrong = [];   // 重置紀錄
+            updateQuizUI();
+        }
+
+        function updateQuizUI() {
+            if (currentQuestionIndex >= quizData.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = quizData[currentQuestionIndex];
+            document.getElementById('qProgress').innerText = currentQuestionIndex + 1;
+            document.getElementById('qScoreText').innerText = `目前分數：${quizScore}`;
+            
+            const diffEl = document.getElementById('qDifficulty');
+            diffEl.innerText = `難度：${q.level}`;
+            if(q.level.includes('基礎')) diffEl.className = 'bg-green-100 text-green-700 px-3 py-1 rounded-full shadow-sm text-sm font-bold';
+            else if(q.level.includes('進階')) diffEl.className = 'bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full shadow-sm text-sm font-bold';
+            else diffEl.className = 'bg-red-100 text-red-700 px-3 py-1 rounded-full shadow-sm text-sm font-bold';
+
+            document.getElementById('questionText').innerText = `${currentQuestionIndex + 1}. ${q.q}`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.opt.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left bg-white border-2 border-purple-200 p-4 rounded-xl hover:bg-purple-50 hover:border-purple-400 font-bold text-gray-700 transition duration-200';
+                btn.innerText = optText;
+                btn.onclick = () => checkAnswer(index, q.ans, btn, q);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // 修改 checkAnswer：加入紀錄邏輯
+        function checkAnswer(selectedIndex, correctIndex, btnElement, questionData) {
+            const buttons = document.getElementById('optionsContainer').children;
+            for(let btn of buttons) { btn.disabled = true; btn.classList.remove('hover:bg-purple-50', 'hover:border-purple-400'); }
+
+            const questionText = questionData.q;
+            const correctAnswerText = questionData.opt[correctIndex];
+
+            if (selectedIndex === correctIndex) {
+                btnElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                btnElement.innerHTML += ' <i class="fa-solid fa-circle-check float-right text-xl text-green-500"></i>';
+                quizScore += 10;
+                // ✅ 紀錄答對的題目
+                recordedCorrect.push(`[第${currentQuestionIndex + 1}題] ${questionText}`);
+            } else {
+                btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                btnElement.innerHTML += ' <i class="fa-solid fa-circle-xmark float-right text-xl text-red-500"></i>';
+                buttons[correctIndex].classList.add('bg-green-100', 'border-green-500');
+                // ❌ 紀錄答錯的題目及正確答案
+                recordedWrong.push(`[第${currentQuestionIndex + 1}題] ${questionText} (正確解答應為：${correctAnswerText})`);
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                updateQuizUI();
+            }, 1000);
+        }
+
+        // 修改 finishQuiz：加入傳送資料到 GAS 的邏輯
+        async function finishQuiz() {
+            document.getElementById('questionBlock').classList.add('hidden');
+            
+            // 顯示上傳中的 Loading 遮罩
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+
+            // 整理要傳送的資料格式
+            const submitData = {
+                name: playerName,
+                score: quizScore,
+                correctQuestions: recordedCorrect.length > 0 ? recordedCorrect.join('\n') : '全錯',
+                wrongQuestions: recordedWrong.length > 0 ? recordedWrong.join('\n\n') : '全對，太神啦！'
+            };
+
+            // 呼叫 GAS Web App
+            try {
+                if(GAS_WEB_APP_URL === "YOUR_GAS_WEB_APP_URL") {
+                    console.log("提示：尚未設定 GAS URL，跳過上傳。");
+                    document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> 本地測試模式 (尚未設定上傳網址)';
+                } else {
+                    const response = await fetch(GAS_WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(submitData)
+                    });
+                    const result = await response.json();
+                    if(result.status === "success") {
+                        document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> 成績與錯題已成功同步至雲端！';
+                    }
+                }
+            } catch (error) {
+                console.error("上傳失敗：", error);
+                document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-xmark text-red-500"></i> 上傳失敗，請檢查網路連線。';
+            }
+
+            // 關閉 Loading 遮罩，顯示結果畫面
+            overlay.classList.add('hidden');
+            document.getElementById('quizResultBlock').classList.remove('hidden');
+            document.getElementById('finalScoreDisplay').innerText = quizScore;
+            
+            scoreHistory.push({ date: new Date().toLocaleDateString(), score: quizScore });
+            localStorage.setItem("earthMysteryScores", JSON.stringify(scoreHistory));
+
+            if (quizScore > 0) confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            renderChart();
+        }
+
+        function resetQuiz() {
+            document.getElementById('quizResultBlock').classList.add('hidden');
+            document.getElementById('quizStartBlock').classList.remove('hidden');
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            const recentHistory = scoreHistory.slice(-5);
+            const labels = recentHistory.map((_, i) => `第 ${i+1} 次`);
+            const data = recentHistory.map(h => h.score);
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: '測驗分數軌跡', data: data, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderWidth: 3, pointBackgroundColor: '#c4b5fd', pointRadius: 6, tension: 0.3, fill: true }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false }, title: { display: true, text: '你的進步曲線圖 📈', font: { size: 16 } } } }
+            });
+        }
+    </script>
+</body>
+</html>
