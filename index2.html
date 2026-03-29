@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 大地的奧祕 - 超強自然學習網 (雲端紀錄版)</title>
+    <title>🔥 大地的奧祕 - 完整自學與雲端紀錄版</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -22,26 +22,26 @@
             background-attachment: fixed;
         }
 
-        /* 卡片與動畫樣式保持不變 */
-        .flip-card { background-color: transparent; width: 100%; height: 180px; perspective: 1000px; cursor: pointer; }
+        /* 翻翻卡動畫樣式 */
+        .flip-card { background-color: transparent; width: 100%; height: 200px; perspective: 1000px; cursor: pointer; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .flip-card:hover .flip-card-inner, .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .flip-card-front { background: linear-gradient(to bottom right, #ffffff, #f0fdf4); border: 4px solid #4ade80; }
         .flip-card-back { background: linear-gradient(to bottom right, #4ade80, #22c55e); color: white; transform: rotateY(180deg); border: 4px solid #16a34a; }
-        .draggable { cursor: grab; transition: transform 0.2s; }
+        
+        /* 拖曳遊戲樣式 */
+        .draggable { cursor: grab; transition: transform 0.2s; user-select: none; }
         .draggable:active { cursor: grabbing; transform: scale(1.05); }
-        .dropzone { transition: all 0.3s ease; min-height: 120px; }
+        .dropzone { transition: all 0.3s ease; min-height: 120px; border: 3px dashed #cbd5e1; }
         .dropzone.dragover { background-color: #fef08a; border-color: #eab308; transform: scale(1.02); }
-        .river-container { position: relative; overflow: hidden; border-radius: 1rem; background: #e0f2fe; height: 200px; }
-        .water-flow { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.4) 0px, rgba(56, 189, 248, 0.4) 20px, rgba(2, 132, 199, 0.5) 20px, rgba(2, 132, 199, 0.5) 40px); animation: flow 2s linear infinite; }
-        .rock-sim { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #78716c; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes flow { from { background-position: 0 0; } to { background-position: 100px 0; } }
-        .tab-btn.active { background-color: #3b82f6; color: white; }
+        
+        /* 頁籤按鈕樣式 */
+        .tab-btn.active { background-color: #3b82f6; color: white; border-color: #2563eb; }
 
         /* 上傳中的遮罩動畫 */
         #loadingOverlay { backdrop-filter: blur(4px); }
-        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -61,9 +61,9 @@
     </div>
 
     <!-- 上傳成績的 Loading 遮罩 -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex flex-col justify-center items-center hidden">
-        <div class="spinner mb-4"></div>
-        <h2 class="text-2xl font-bold text-white tracking-widest animate-pulse">正在將成績上傳至雲端...</h2>
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex flex-col justify-center items-center hidden">
+        <div class="spinner mb-6"></div>
+        <h2 class="text-3xl font-black text-white tracking-widest animate-pulse">📡 成績光速上傳中...</h2>
     </div>
 
     <!-- 主頁面 -->
@@ -80,7 +80,7 @@
                     <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
                         大地的奧祕 學習網
                     </h1>
-                    <p class="text-lg font-bold text-gray-500 mt-1">國小自然 五下 第2單元 🌍</p>
+                    <p class="text-lg font-bold text-gray-500 mt-1">國小自然 五下 🌍 完整特訓版</p>
                 </div>
             </div>
             <div class="z-10 mt-4 md:mt-0 bg-yellow-100 px-6 py-3 rounded-full border-2 border-yellow-400 font-bold text-yellow-700 shadow-sm flex items-center gap-2">
@@ -90,23 +90,135 @@
 
         <!-- 導覽列標籤 -->
         <nav class="flex flex-wrap gap-2 justify-center">
-            <button onclick="switchTab('quiz')" class="tab-btn active px-6 py-3 rounded-full font-bold shadow-md bg-white text-purple-500 hover:bg-purple-100 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>特訓題庫</button>
-            <button onclick="switchTab('memory')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-blue-500 hover:bg-blue-100 transition"><i class="fa-solid fa-brain mr-2"></i>超強記憶</button>
-            <button onclick="switchTab('concept')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-green-500 hover:bg-green-100 transition"><i class="fa-solid fa-book-open mr-2"></i>概念學習</button>
-            <button onclick="switchTab('game')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-orange-500 hover:bg-orange-100 transition"><i class="fa-solid fa-gamepad mr-2"></i>互動遊戲</button>
+            <button onclick="switchTab('memory')" class="tab-btn active px-6 py-3 rounded-full font-bold shadow-md bg-white text-blue-500 hover:bg-blue-100 transition border-2 border-transparent"><i class="fa-solid fa-brain mr-2"></i>超強記憶</button>
+            <button onclick="switchTab('concept')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-green-500 hover:bg-green-100 transition border-2 border-transparent"><i class="fa-solid fa-book-open mr-2"></i>概念學習</button>
+            <button onclick="switchTab('game')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-orange-500 hover:bg-orange-100 transition border-2 border-transparent"><i class="fa-solid fa-gamepad mr-2"></i>互動遊戲</button>
+            <button onclick="switchTab('quiz')" class="tab-btn px-6 py-3 rounded-full font-bold shadow-md bg-white text-purple-500 hover:bg-purple-100 transition border-2 border-transparent"><i class="fa-solid fa-pen-to-square mr-2"></i>特訓題庫(雲端)</button>
         </nav>
 
-        <!-- (因篇幅限制，記憶區、學習區、遊戲區的 HTML 結構與上一個版本完全相同，此處省略以節省空間，但實務上需保留) -->
-        <section id="memory-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-green-400"><div class="text-center"><h2 class="text-3xl font-black">超強口訣區</h2><p class="mt-2 text-gray-500">氣陸海生 / 侵搬堆 / 雨風震 (詳細卡片內容請參考上版)</p></div></section>
-        <section id="concept-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-blue-400"><div class="text-center"><h2 class="text-3xl font-black">概念學習區</h2><p class="mt-2 text-gray-500">地層 / 變動 / 影響 (詳細學習單內容請參考上版)</p></div></section>
-        <section id="game-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-orange-400"><div class="text-center"><h2 class="text-3xl font-black">動手玩科學</h2><p class="mt-2 text-gray-500">拖曳分類 與 河流模擬器 (詳細互動內容請參考上版)</p></div></section>
+        <!-- 區塊 1: 超強記憶區 -->
+        <section id="memory-sec" class="bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-blue-400">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-blue-600"><i class="fa-solid fa-bolt text-yellow-400 mr-2"></i>考前必背翻翻卡</h2>
+                <p class="text-gray-500 mt-2 font-bold">點擊卡片，把自然現象的關鍵字記在腦海裡！</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 卡片 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('active')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-solid fa-earth-asia text-5xl text-blue-500 mb-4"></i>
+                            <h3 class="text-2xl font-black text-gray-800">地表四要素</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-2xl font-black mb-2 text-yellow-200">大氣、陸地、海洋、生物</h3>
+                            <p class="text-lg">地球萬物賴以維生的重要環境。</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 卡片 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('active')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-solid fa-water text-5xl text-blue-400 mb-4"></i>
+                            <h3 class="text-2xl font-black text-gray-800">流水三作用</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-2xl font-black mb-2 text-yellow-200">侵蝕、搬運、堆積</h3>
+                            <p class="text-lg">河流改變地表形貌的三大超能力！</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 卡片 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('active')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-regular fa-gem text-5xl text-purple-500 mb-4"></i>
+                            <h3 class="text-2xl font-black text-gray-800">礦物比硬度</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-2xl font-black mb-2 text-yellow-200">互相刻劃</h3>
+                            <p class="text-lg">被刻出凹痕的礦物，硬度比較「軟」喔！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <!-- 區塊 4: 特訓題庫 (主戰場) -->
-        <section id="quiz-sec" class="bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-purple-400">
+        <!-- 區塊 2: 概念學習區 -->
+        <section id="concept-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-green-400">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-green-600"><i class="fa-solid fa-book-open text-green-500 mr-2"></i>地質圖書館</h2>
+                <p class="text-gray-500 mt-2 font-bold">精華概念總整理，閱讀後功力大增！</p>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-green-50 p-6 rounded-2xl border-l-8 border-green-500 shadow-sm">
+                    <h3 class="text-2xl font-black text-green-700 mb-2">1. 岩石與礦物 🪨</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        地層主要是由<b>岩石</b>構成。岩石是由一種或多種<b>礦物</b>組成的。例如：花岡岩裡面包含了石英、長石和黑雲母。我們可以透過觀察礦物的<b>顏色、光澤、硬度</b>來分辨它們。
+                    </p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-2xl border-l-8 border-blue-500 shadow-sm">
+                    <h3 class="text-2xl font-black text-blue-700 mb-2">2. 河流的魔法 🌊</h3>
+                    <ul class="text-lg text-gray-700 list-disc list-inside space-y-2">
+                        <li><b>上游：</b>水流湍急，以<b>侵蝕作用</b>為主，常有大岩塊和深谷(V型谷)。</li>
+                        <li><b>中游：</b>以<b>搬運作用</b>為主，岩塊在搬運過程中互相碰撞，變成圓圓的鵝卵石。</li>
+                        <li><b>下游：</b>水流變慢，以<b>堆積作用</b>為主，河床寬廣，充滿細沙，出海口常形成沙洲。</li>
+                    </ul>
+                </div>
+                <div class="bg-red-50 p-6 rounded-2xl border-l-8 border-red-500 shadow-sm">
+                    <h3 class="text-2xl font-black text-red-700 mb-2">3. 大地的變動與防災 ⚠️</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        地表環境受到<b>風化、流水</b>等作用會緩慢改變。但遇到<b>地震、颱風、豪雨</b>時，會在短時間內發生劇烈變動（如山坡滑動、土石流）。因此平時要做好防災準備，例如準備緊急避難包、豪雨時避免前往山區。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 3: 互動遊戲區 -->
+        <section id="game-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-orange-400">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-orange-600"><i class="fa-solid fa-gamepad text-orange-500 mr-2"></i>河流探險家：物體歸位</h2>
+                <p class="text-gray-500 mt-2 font-bold">請將下方的「石頭/沙子」拖曳到正確的河流區段！</p>
+            </div>
+            
+            <!-- 拖曳選項 -->
+            <div class="flex justify-center gap-4 mb-8" id="draggables-container">
+                <div draggable="true" class="draggable bg-gray-600 text-white px-6 py-4 rounded-xl font-black shadow-md border-2 border-gray-800" data-target="up">巨大有稜角的岩塊</div>
+                <div draggable="true" class="draggable bg-gray-400 text-white px-6 py-4 rounded-full font-black shadow-md border-2 border-gray-600" data-target="mid">圓潤的鵝卵石</div>
+                <div draggable="true" class="draggable bg-yellow-200 text-yellow-800 px-6 py-4 rounded-md font-black shadow-md border-2 border-yellow-400" data-target="down">細微的泥沙</div>
+            </div>
+
+            <!-- 放置區 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="dropzone bg-blue-50 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden" data-zone="up">
+                    <h3 class="text-2xl font-black text-blue-800 mb-2 z-10">上游 (侵蝕區)</h3>
+                    <p class="text-sm text-blue-600 font-bold z-10 mb-4">水流超急！</p>
+                    <div class="drop-content w-full flex flex-col gap-2 z-10 items-center"></div>
+                </div>
+                <div class="dropzone bg-blue-100 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden" data-zone="mid">
+                    <h3 class="text-2xl font-black text-blue-800 mb-2 z-10">中游 (搬運區)</h3>
+                    <p class="text-sm text-blue-600 font-bold z-10 mb-4">不斷滾動碰撞！</p>
+                    <div class="drop-content w-full flex flex-col gap-2 z-10 items-center"></div>
+                </div>
+                <div class="dropzone bg-blue-200 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden" data-zone="down">
+                    <h3 class="text-2xl font-black text-blue-800 mb-2 z-10">下游 (堆積區)</h3>
+                    <p class="text-sm text-blue-600 font-bold z-10 mb-4">水流平緩寬廣！</p>
+                    <div class="drop-content w-full flex flex-col gap-2 z-10 items-center"></div>
+                </div>
+            </div>
+            <div class="text-center mt-6">
+                <p id="game-feedback" class="text-xl font-black text-orange-500 h-8"></p>
+                <button onclick="resetGame()" class="mt-4 px-6 py-2 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300">重新開始遊戲</button>
+            </div>
+        </section>
+
+        <!-- 區塊 4: 特訓題庫 (雲端紀錄版) -->
+        <section id="quiz-sec" class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 border-t-8 border-purple-400">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-black text-gray-800"><i class="fa-solid fa-pen-to-square text-purple-500 mr-2"></i>30題特訓挑戰</h2>
+                <h2 class="text-3xl font-black text-gray-800"><i class="fa-solid fa-cloud-arrow-up text-purple-500 mr-2"></i>10題精華特訓 (將上傳雲端)</h2>
                 <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-bold">
-                    進度: <span id="qProgress">0</span>/30
+                    進度: <span id="qProgress">0</span>/10
                 </div>
             </div>
 
@@ -114,7 +226,7 @@
                 <div id="quizStartBlock">
                     <i class="fa-solid fa-meteor text-6xl text-purple-400 mb-4 animate-pulse"></i>
                     <h3 class="text-2xl font-bold mb-2">準備好測試你的實力了嗎？</h3>
-                    <p class="text-gray-600 mb-6">共30題，測驗結束後將自動上傳成績給老師！</p>
+                    <p class="text-gray-600 mb-6 font-bold text-red-500">測驗結束後，成績與錯題會自動上傳給老師喔！</p>
                     <button onclick="startQuiz()" class="px-8 py-3 bg-purple-600 text-white text-xl font-black rounded-full shadow-lg hover:scale-105 transition-transform">
                         開始挑戰！
                     </button>
@@ -127,22 +239,25 @@
                     </div>
                     <h3 id="questionText" class="text-2xl font-bold text-gray-800 mb-8 mt-4 leading-relaxed text-left"></h3>
                     <div id="optionsContainer" class="grid grid-cols-1 gap-4">
-                        <!-- 選項 -->
+                        <!-- 選項會產生在這裡 -->
                     </div>
                 </div>
             </div>
 
             <div id="quizResultBlock" class="hidden bg-green-50 p-8 rounded-2xl border-2 border-green-200 mt-6">
-                <h3 class="text-3xl font-black text-center text-green-700 mb-4">挑戰完成！🎉</h3>
-                <p class="text-center text-xl font-bold mb-2">你的最終得分是：<span id="finalScoreDisplay" class="text-4xl text-red-500 ml-2"></span> 分</p>
-                <p id="cloudStatus" class="text-center font-bold text-blue-600 mb-6"><i class="fa-solid fa-cloud-arrow-up"></i> 成績已成功上傳雲端！</p>
+                <h3 class="text-4xl font-black text-center text-green-700 mb-4">挑戰完成！🎉</h3>
+                <p class="text-center text-2xl font-bold mb-4">你的最終得分是：<span id="finalScoreDisplay" class="text-5xl text-red-500 ml-2"></span> 分</p>
+                
+                <div id="cloudStatusContainer" class="bg-white p-4 rounded-xl shadow border-2 border-blue-100 max-w-lg mx-auto mb-6 text-center">
+                    <p id="cloudStatus" class="font-black text-lg text-blue-600"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料上傳中...</p>
+                </div>
                 
                 <div class="max-w-lg mx-auto bg-white p-4 rounded-xl shadow-md">
                     <canvas id="scoreChart"></canvas>
                 </div>
                 
-                <div class="text-center mt-6">
-                    <button onclick="resetQuiz()" class="px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow hover:bg-blue-600">再挑戰一次</button>
+                <div class="text-center mt-8">
+                    <button onclick="resetQuiz()" class="px-8 py-3 bg-purple-500 text-white text-lg font-bold rounded-full shadow-lg hover:bg-purple-600 transition">再挑戰一次</button>
                 </div>
             </div>
         </section>
@@ -151,18 +266,15 @@
 
     <script>
         // ==========================================
-        // 🔥🔥🔥 請將下面的網址替換為你部署的 GAS Web App URL 🔥🔥🔥
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTOcSf_SVi5LOWM6JXZVSU4V7Rmt711toZwHKtt8eoYK526UBO9rFJ7XhCyHWdOMo9Wg/exec"; 
-        // 例如: "https://script.google.com/macros/s/AKfycby.../exec"
+        // 🔥 已綁定你的 Google Apps Script (GAS) 網址
         // ==========================================
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTOcSf_SVi5LOWM6JXZVSU4V7Rmt711toZwHKtt8eoYK526UBO9rFJ7XhCyHWdOMo9Wg/exec"; 
 
         let playerName = "";
         let quizScore = 0;
         let currentQuestionIndex = 0;
         let scoreHistory = [];
         let myChart = null;
-        
-        // 新增：用來記錄學生的作答細節
         let recordedCorrect = [];
         let recordedWrong = [];
 
@@ -171,6 +283,8 @@
             if (savedName) document.getElementById('playerNameInput').value = savedName;
             const savedHistory = localStorage.getItem("earthMysteryScores");
             if(savedHistory) scoreHistory = JSON.parse(savedHistory);
+            
+            initDragAndDrop(); // 初始化拖曳遊戲
         };
 
         function startGame() {
@@ -182,24 +296,121 @@
             document.getElementById('loginModal').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            
+            // 預設切換到第一個頁籤
+            switchTab('memory');
         }
 
+        // 頁籤切換邏輯
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'text-white'));
-            event.currentTarget.classList.add('active');
+            // 重置按鈕樣式
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-purple-500', 'text-white');
+                
+                // 恢復原本的文字顏色
+                if(btn.innerText.includes('記憶')) btn.classList.add('text-blue-500');
+                if(btn.innerText.includes('概念')) btn.classList.add('text-green-500');
+                if(btn.innerText.includes('遊戲')) btn.classList.add('text-orange-500');
+                if(btn.innerText.includes('特訓')) btn.classList.add('text-purple-500');
+            });
+
+            // 設定當前按鈕樣式
+            const currentBtn = event ? event.currentTarget : document.querySelector('.tab-btn');
+            currentBtn.classList.add('active', 'text-white');
+            currentBtn.classList.remove('text-blue-500', 'text-green-500', 'text-orange-500', 'text-purple-500');
+            
+            if(tabId === 'memory') currentBtn.classList.add('bg-blue-500');
+            if(tabId === 'concept') currentBtn.classList.add('bg-green-500');
+            if(tabId === 'game') currentBtn.classList.add('bg-orange-500');
+            if(tabId === 'quiz') currentBtn.classList.add('bg-purple-500');
+
+            // 隱藏所有區塊並顯示目標區塊
             ['memory-sec', 'concept-sec', 'game-sec', 'quiz-sec'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(`${tabId}-sec`).classList.remove('hidden');
         }
 
-        // 題目資料 (節錄版示範，請補齊30題)
+        // ==========================================
+        // 拖曳遊戲邏輯
+        // ==========================================
+        let draggedElement = null;
+
+        function initDragAndDrop() {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropzones = document.querySelectorAll('.dropzone');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedElement = draggable;
+                    draggable.classList.add('opacity-50');
+                });
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('opacity-50');
+                    draggedElement = null;
+                    checkGameWin();
+                });
+            });
+
+            dropzones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('dragover');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('dragover');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                    if (draggedElement) {
+                        const targetZone = draggedElement.getAttribute('data-target');
+                        const currentZone = zone.getAttribute('data-zone');
+                        
+                        if (targetZone === currentZone) {
+                            zone.querySelector('.drop-content').appendChild(draggedElement);
+                            document.getElementById('game-feedback').innerText = "✅ 放對了！好厲害！";
+                            document.getElementById('game-feedback').className = "text-xl font-black text-green-500 h-8";
+                            confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+                        } else {
+                            document.getElementById('game-feedback').innerText = "❌ 好像放錯位置囉，再試試看！";
+                            document.getElementById('game-feedback').className = "text-xl font-black text-red-500 h-8";
+                        }
+                    }
+                });
+            });
+        }
+
+        function resetGame() {
+            const container = document.getElementById('draggables-container');
+            document.querySelectorAll('.draggable').forEach(el => container.appendChild(el));
+            document.getElementById('game-feedback').innerText = "";
+        }
+
+        function checkGameWin() {
+            const container = document.getElementById('draggables-container');
+            if (container.children.length === 0) {
+                document.getElementById('game-feedback').innerText = "🎉 太神啦！你成功還原了河流地形！";
+                document.getElementById('game-feedback').className = "text-2xl font-black text-orange-500 h-8 animate-bounce mt-4";
+                confetti({ particleCount: 150, spread: 100 });
+            }
+        }
+
+        // ==========================================
+        // 測驗與 GAS 雲端紀錄邏輯
+        // ==========================================
+        // 10 題精選題庫
         const quizData = [
             { level: '🟢 基礎', q: '地表環境包含哪些要素？', opt: ['只有陸地和海洋', '大氣、陸地、海洋、生物', '只有岩石和礦物', '大氣和太空'], ans: 1 },
-            { level: '🟢 基礎', q: '地球表面的海洋與陸地比例大約是多少？', opt: ['海洋71%、陸地29%', '海洋50%、陸地50%', '海洋29%、陸地71%', '海洋90%、陸地10%'], ans: 0 },
-            { level: '🟢 基礎', q: '地層主要是由什麼所構成的？', opt: ['塑膠', '樹木', '岩石', '金屬'], ans: 2 },
-            { level: '🟡 進階', q: '關於岩石與礦物的差異，下列何者正確？', opt: ['岩石是由單一物質組成', '岩石和礦物完全一樣', '礦物通常有固定性質，岩石由多種礦物拼裝而成', '礦物比岩石軟'], ans: 2 },
-            { level: '🔴 高階', q: '比較三大作用，哪一個是改變地表形貌最主要的「運輸工具」？', opt: ['侵蝕作用', '堆積作用', '搬運作用', '風化作用'], ans: 2 }
+            { level: '🟢 基礎', q: '岩石長期受到風吹、日晒、雨淋、生物活動等影響，質地變脆弱且易碎裂，這種現象稱為什麼？', opt: ['侵蝕作用', '風化作用', '堆積作用', '搬運作用'], ans: 1 },
+            { level: '🟢 基礎', q: '河流的不同區段中，哪一個區段的河床最寬廣？', opt: ['上游', '中游', '下游', '出海口外的深海'], ans: 2 },
+            { level: '🟡 進階', q: '關於岩石與礦物的差異，下列何者正確？', opt: ['岩石是由單一物質組成', '岩石和礦物完全一樣', '礦物通常有固定性質，岩石由多種礦物構成', '礦物比岩石軟'], ans: 2 },
+            { level: '🟡 進階', q: '想比較兩種礦物的硬度，最簡單的方法是什麼？', opt: ['用火燒看看', '把它們放在水裡', '將兩種礦物互相刻劃', '用放大鏡觀察顏色'], ans: 2 },
+            { level: '🟡 進階', q: '河流彎曲處，哪一側的水流速度較慢，泥沙會漸漸堆積使土地越來越大？', opt: ['凹岸', '凸岸', '兩岸速度一樣', '河中央'], ans: 1 },
+            { level: '🔴 高階', q: '當河水暴漲、巨浪衝擊時，下列哪一項自然現象「不會」使地表環境在短時間內發生劇烈變動？', opt: ['地震', '微風', '颱風', '豪雨'], ans: 1 },
+            { level: '🔴 高階', q: '比較三大作用，哪一個是改變地表形貌最主要的「運輸工具」？', opt: ['侵蝕作用', '搬運作用', '堆積作用', '風化作用'], ans: 1 },
+            { level: '🔴 高階', q: '下列哪一項防災行為是錯誤的？', opt: ['準備家庭防災計畫', '颱風來襲時，主動撤離易山崩地區', '豪雨期間避免進入山區', '颱風來襲時，前往海邊觀浪'], ans: 3 },
+            { level: '🔴 高階', q: '不論是陸地還是海底，地表環境的底部主要都是由什麼構成的？', opt: ['泥沙', '岩石(地層)', '化石', '珊瑚礁'], ans: 1 }
         ];
 
         function startQuiz() {
@@ -209,8 +420,8 @@
             
             currentQuestionIndex = 0;
             quizScore = 0;
-            recordedCorrect = []; // 重置紀錄
-            recordedWrong = [];   // 重置紀錄
+            recordedCorrect = []; 
+            recordedWrong = [];   
             updateQuizUI();
         }
 
@@ -237,14 +448,13 @@
             
             q.opt.forEach((optText, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'w-full text-left bg-white border-2 border-purple-200 p-4 rounded-xl hover:bg-purple-50 hover:border-purple-400 font-bold text-gray-700 transition duration-200';
+                btn.className = 'w-full text-left bg-white border-2 border-purple-200 p-4 rounded-xl hover:bg-purple-50 hover:border-purple-400 font-bold text-gray-700 transition duration-200 text-lg';
                 btn.innerText = optText;
                 btn.onclick = () => checkAnswer(index, q.ans, btn, q);
                 optionsContainer.appendChild(btn);
             });
         }
 
-        // 修改 checkAnswer：加入紀錄邏輯
         function checkAnswer(selectedIndex, correctIndex, btnElement, questionData) {
             const buttons = document.getElementById('optionsContainer').children;
             for(let btn of buttons) { btn.disabled = true; btn.classList.remove('hover:bg-purple-50', 'hover:border-purple-400'); }
@@ -252,35 +462,37 @@
             const questionText = questionData.q;
             const correctAnswerText = questionData.opt[correctIndex];
 
+            // 每題 10 分 (總共 10 題 = 100 分)
+            const pointsPerQuestion = 10; 
+
             if (selectedIndex === correctIndex) {
                 btnElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
-                btnElement.innerHTML += ' <i class="fa-solid fa-circle-check float-right text-xl text-green-500"></i>';
-                quizScore += 10;
-                // ✅ 紀錄答對的題目
+                btnElement.innerHTML += ' <i class="fa-solid fa-circle-check float-right text-2xl text-green-500"></i>';
+                quizScore += pointsPerQuestion;
+                // 紀錄答對
                 recordedCorrect.push(`[第${currentQuestionIndex + 1}題] ${questionText}`);
             } else {
                 btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
-                btnElement.innerHTML += ' <i class="fa-solid fa-circle-xmark float-right text-xl text-red-500"></i>';
+                btnElement.innerHTML += ' <i class="fa-solid fa-circle-xmark float-right text-2xl text-red-500"></i>';
                 buttons[correctIndex].classList.add('bg-green-100', 'border-green-500');
-                // ❌ 紀錄答錯的題目及正確答案
+                // 紀錄答錯
                 recordedWrong.push(`[第${currentQuestionIndex + 1}題] ${questionText} (正確解答應為：${correctAnswerText})`);
             }
 
             setTimeout(() => {
                 currentQuestionIndex++;
                 updateQuizUI();
-            }, 1000);
+            }, 1200);
         }
 
-        // 修改 finishQuiz：加入傳送資料到 GAS 的邏輯
         async function finishQuiz() {
             document.getElementById('questionBlock').classList.add('hidden');
             
-            // 顯示上傳中的 Loading 遮罩
+            // 顯示 Loading 遮罩
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.remove('hidden');
+            document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>連線至 Google 試算表中...';
 
-            // 整理要傳送的資料格式
             const submitData = {
                 name: playerName,
                 score: quizScore,
@@ -288,27 +500,24 @@
                 wrongQuestions: recordedWrong.length > 0 ? recordedWrong.join('\n\n') : '全對，太神啦！'
             };
 
-            // 呼叫 GAS Web App
+            // 傳送資料到 GAS
             try {
-                if(GAS_WEB_APP_URL === "YOUR_GAS_WEB_APP_URL") {
-                    console.log("提示：尚未設定 GAS URL，跳過上傳。");
-                    document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> 本地測試模式 (尚未設定上傳網址)';
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(submitData)
+                });
+                const result = await response.json();
+                if(result.status === "success") {
+                    document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-circle-check text-green-500 text-2xl mr-2"></i><span class="text-green-600">成績與錯題已成功上傳雲端！老師看得到囉！</span>';
                 } else {
-                    const response = await fetch(GAS_WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(submitData)
-                    });
-                    const result = await response.json();
-                    if(result.status === "success") {
-                        document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> 成績與錯題已成功同步至雲端！';
-                    }
+                    document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-yellow-500 text-2xl mr-2"></i>上傳遇到小問題，但你的分數已保存在網頁中。';
                 }
             } catch (error) {
                 console.error("上傳失敗：", error);
-                document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-xmark text-red-500"></i> 上傳失敗，請檢查網路連線。';
+                document.getElementById('cloudStatus').innerHTML = '<i class="fa-solid fa-xmark text-red-500 text-2xl mr-2"></i>連線失敗，請檢查網路。';
             }
 
-            // 關閉 Loading 遮罩，顯示結果畫面
+            // 關閉 Loading 並顯示結果
             overlay.classList.add('hidden');
             document.getElementById('quizResultBlock').classList.remove('hidden');
             document.getElementById('finalScoreDisplay').innerText = quizScore;
@@ -316,7 +525,7 @@
             scoreHistory.push({ date: new Date().toLocaleDateString(), score: quizScore });
             localStorage.setItem("earthMysteryScores", JSON.stringify(scoreHistory));
 
-            if (quizScore > 0) confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            if (quizScore >= 60) confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
             renderChart();
         }
 
@@ -334,7 +543,7 @@
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels, datasets: [{ label: '測驗分數軌跡', data: data, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderWidth: 3, pointBackgroundColor: '#c4b5fd', pointRadius: 6, tension: 0.3, fill: true }] },
-                options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false }, title: { display: true, text: '你的進步曲線圖 📈', font: { size: 16 } } } }
+                options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false }, title: { display: true, text: '你的進步曲線圖 📈', font: { size: 16 } } } }
             });
         }
     </script>
